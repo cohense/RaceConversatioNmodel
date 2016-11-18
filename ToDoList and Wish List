@@ -1,0 +1,17 @@
+Highest Priority things to add:
+  *Averaged updating bias function--Done!
+
+Highest Priority things to test:
+
+In the future, it'd be cool to add:
+  *specific function to state population distribution (very quick to add)
+  *Volubility attribute
+  *Topics variable
+  *Spatiality in conversations
+  *Accuracy of one's gaze (that is, gazing correctly at the individual who did talk) should alter gaze behavior in the future. 
+    *Q learning or Reinforcement learning
+
+In the future, it'd be cool to test:
+* Having unequally distributed races/genders should be enough to produce runaway inequality, regardless of bias level 
+    (since fewer speakers of that level, fewer bias updates, fewer people look at them, etc etc.)
+   *Whether speaker's gaze is more strongly influential than non-speakers gaze.
