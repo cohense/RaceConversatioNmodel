@@ -213,9 +213,9 @@ class Agent():
 	def update_bias(self):
 		self.bias_log.append(self.bias_level) #Note the current bias level for this juncture, before updating to a new one based on conversation
 		#The race of the person currently gazing at.
-		#partner_race=self.output_gaze().return_race()
-		#new_level=int(partner_race=='w') #Returns 1 if white, 0 if black
-		#self.bias_level=(self.bias_level+new_level)/2
+		partner_race=self.output_gaze().return_race()
+		new_level=int(partner_race=='w') #Returns 1 if white, 0 if black
+		self.bias_level=(self.bias_level+new_level)/2
 		
 
 	def update_gaze(self, partners):
@@ -235,10 +235,13 @@ class Agent():
 					break
 		#Normalize the probabilities
 		total=sum(raw_probabilities)
-		#List of normalized gazes per individual
-		normalized_probabilities=[val/total for val in raw_probabilities]
-		#Choose one based on normalized probabilitys
-		self.gaze=np.random.choice(partners,p=normalized_probabilities)
+		if total!=0: #Sometimes, thsi total is 0, which means there's no likelihood of talking to anyone--how is that possible?
+			#List of normalized gazes per individual
+			normalized_probabilities=[val/total for val in raw_probabilities]
+			#Choose one based on normalized probabilitys
+			self.gaze=np.random.choice(partners,p=normalized_probabilities)
+		else:
+			self.gaze=np.random.choice(partners)
 
 	def return_race(self):
 		return self.ethnicity
@@ -254,5 +257,5 @@ class Agent():
 
 
 #
-stats=simulate_many_conversations(junctures=10,num_convos=50,rounds=10)
+stats=simulate_many_conversations(junctures=5,num_convos=10,rounds=10)
 
