@@ -140,8 +140,8 @@ def create_speaker_plot(data,num_junctures, num_convos):
 	#Add a line between rounds
 	#pd.Series(black_speaking_t).plot(kind='bar')
 	plt.plot(black_speaking_t)
-	for t in range(len(data)): #How many rounds of conversation were there?
-			plt.axvline(num_junctures*(t+1)-1, linestyle='dashed',color='k') #Point a line at that end of that round
+	#for t in range(len(data)): #How many rounds of conversation were there?
+	#		plt.axvline(num_junctures*(t+1)-1, linestyle='dashed',color='k') #Point a line at that end of that round
 	plt.ylim(0,1)
 	plt.xlim(xmin=-1)
 	plt.ylabel('Proportion of Black Speakers')
@@ -157,13 +157,17 @@ def create_parts_plot(participants,n_junctures, rounds):
 	###########################
 	#Mean Individual biases across time
 	###########################
+	#Create sample
+	create_individual_plot(participants[0])
+	fig,ax=plt.subplots(1,1)
 	#At each juncture, read all participants bias levels.
 	part_bias_logs=pd.DataFrame([part.return_bias_log() for part in participants])
 	logs=part_bias_logs.describe().T
 	#print(logs)
-	logs['mean'].plot(yerr=logs['std'])
-	for t in range(rounds): #How many rounds of conversation were there?
-		plt.axvline(n_junctures*(t+1)-1, linestyle='dashed',color='k') #Point a line at that end of that round
+	logs['mean'].plot()#yerr=logs['std'])
+	plt.axhline(.5)
+	#for t in range(rounds): #How many rounds of conversation were there?
+		#plt.axvline(n_junctures*(t+1)-1, linestyle='dashed',color='k') #Point a line at that end of that round
 	#part_bias_logs.describe()#['mean']#.plot(kind='line')
 	plt.ylim(0,1)
 	plt.xlim(xmin=-1)
@@ -173,6 +177,11 @@ def create_parts_plot(participants,n_junctures, rounds):
 	plt.savefig('Bias of Participants Over time')
 	plt.close()
 
+def create_individual_plot(part):
+	#print(part.return_bias_log())
+	plt.plot(part.return_bias_log())
+	plt.ylim(-.2,1.2)
+	plt.savefig('Bias of this participant over time')
 
 ###################
 #Individual class
@@ -193,7 +202,7 @@ class Agent():
 			assert bias >=0 and bias <=1
 			self.bias_level=bias #Let's call this a "pro white bias--higher means more pro white"
 		else:
-			self.bias_level=random.random()
+			self.bias_level=min(max(0, random.gauss(.9,.1)),1)#random.random()/2+.5
 		self.gaze=None
 		self.bias_log=[] #Each agents bias at any point in the simulation
 
@@ -216,6 +225,10 @@ class Agent():
 		partner_race=self.output_gaze().return_race()
 		new_level=int(partner_race=='w') #Returns 1 if white, 0 if black
 		self.bias_level=(self.bias_level+new_level)/2
+		if self.bias_level>1:
+			self.bias_level=1
+		elif self.bias_level<0:
+			self.bias_level=0
 		
 
 	def update_gaze(self, partners):
@@ -257,5 +270,5 @@ class Agent():
 
 
 #
-stats=simulate_many_conversations(junctures=5,num_convos=10,rounds=10)
+stats=simulate_many_conversations(junctures=5,num_convos=10,rounds=600)
 
